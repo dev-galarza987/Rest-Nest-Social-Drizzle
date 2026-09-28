@@ -1,15 +1,29 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { DrizzleModule } from '@nestjs/drizzle'
-import { drizzle } from 'drizzle-orm/node-postgres'
-import { ConfigModule } from '@nestjs/config'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { LoggerModule } from 'nestjs-pino'
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-    })],
+    }),
+    LoggerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const isDev = configService.get<string>('  NODE_ENV') !== 'production';
+        return {
+          pinoHttp: {
+            transport: isDev
+              ? { target: 'pino-pretty', options: { singleLine: true } }
+              : undefined,
+          },
+        };
+      }
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
