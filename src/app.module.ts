@@ -31,7 +31,6 @@ import * as schema from './drizzle/schema';
     DrizzleModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      name: 'Social PostgreSQL',
       useFactory: async (configService: ConfigService) => ({
         drizzle,
         connection: configService.getOrThrow<string>('DATABASE_URL'),
@@ -44,4 +43,4 @@ import * as schema from './drizzle/schema';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
