@@ -7,6 +7,12 @@ import { DrizzleModule } from '@nestjs/drizzle';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { validateEnv } from './config/env.config';
 import * as schema from './drizzle/schema';
+import { AutomapperModule } from '@automapper/nestjs';
+import { pojos } from '@automapper/pojos';
+import { UserProfile } from './user/mapper/user.profile';
+import { UserController } from './user/routes/user.controller';
+import { UserService } from './user/services/user.service';
+import { UserPostgresRepository } from './user/repositories/user.repository';
 
 @Module({
   imports: [
@@ -39,8 +45,11 @@ import * as schema from './drizzle/schema';
         },
       }),
     }),
+    AutomapperModule.forRoot({
+      strategyInitializer: pojos(),
+    }),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, UserController],
+  providers: [AppService, UserPostgresRepository, UserService, UserProfile],
 })
-export class AppModule { }
+export class AppModule {}
